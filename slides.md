@@ -253,9 +253,9 @@ Le paysage a mûri : on passe des bibliothèques "magiques" aux moteurs de graph
   <div class="font-bold text-sm text-sky-500 mb-1">LangGraph</div>
   <div class="text-gray-400 mb-2 italic">Standard d'ingénierie pour workflows complexes</div>
   <ul class="space-y-1">
-    <li>• Représente les flux sous forme de <b>graphe cyclique (DAG)</b></li>
-    <li>• Persistance native de l'état (State Machine)</li>
-    <li>• Idéal pour le <i>Human-in-the-loop</i> et le time-travel debugging</li>
+    <li>Représente les flux sous forme de <b>graphe cyclique (DAG)</b></li>
+    <li>Persistance native de l'état (State Machine)</li>
+    <li>Idéal pour le <i>Human-in-the-loop</i> et le time-travel debugging</li>
   </ul>
   <div class="mt-2 text-[10px] text-emerald-600 font-bold">🎯 Choix recommandé en production industrielle</div>
 </div>
@@ -264,9 +264,9 @@ Le paysage a mûri : on passe des bibliothèques "magiques" aux moteurs de graph
   <div class="font-bold text-sm text-indigo-500 mb-1">CrewAI / AutoGen</div>
   <div class="text-gray-400 mb-2 italic">Orientés collaboration multi-agents</div>
   <ul class="space-y-1">
-    <li>• Basés sur la personnification (Rôles, Objectifs, Backstory)</li>
-    <li>• Prise en main très rapide pour le prototypage</li>
-    <li>• Moins déterministes ; attention aux boucles d'échanges infinies</li>
+    <li>Basés sur la personnification (Rôles, Objectifs, Backstory)</li>
+    <li>Prise en main très rapide pour le prototypage</li>
+    <li>Moins déterministes ; attention aux boucles d'échanges infinies</li>
   </ul>
   <div class="mt-2 text-[10px] text-amber-500 font-bold">🎯 Idéal pour : POCs, simulations, remue-méninges</div>
 </div>
@@ -275,9 +275,9 @@ Le paysage a mûri : on passe des bibliothèques "magiques" aux moteurs de graph
   <div class="font-bold text-sm text-purple-500 mb-1">Harnais Dédiés (Claude Code, OpenHands)</div>
   <div class="text-gray-400 mb-2 italic">Agents verticaux spécialisés code/système</div>
   <ul class="space-y-1">
-    <li>• Intégration CLI native, gestion fine des tokens et des patchs git</li>
-    <li>• Boucle d'auto-réflexion branchée directement sur les linters</li>
-    <li>• Pas besoin d'écrire le graphe : l'agent est clé en main</li>
+    <li>Intégration CLI native, gestion fine des tokens et des patchs git</li>
+    <li>Boucle d'auto-réflexion branchée directement sur les linters</li>
+    <li>Pas besoin d'écrire le graphe : l'agent est clé en main</li>
   </ul>
   <div class="mt-2 text-[10px] text-sky-500 font-bold">🎯 Idéal pour : Développement logiciel assisté</div>
 </div>

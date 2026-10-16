@@ -5,9 +5,9 @@ theme: seriph
 # like them? see https://unsplash.com/collections/94734566/slidev
 background: https://cover.sli.dev
 # some information about your slides (markdown enabled)
-title: MODULE 4 — Les 4 patrons de conception agentiques
+title: MODULE 5 — Technologie, Infrastructure & Outils
 info: |
-  ## Cours Agentic AI 
+  ## Cours Agentic AI
 # apply UnoCSS classes to the current slide
 class: text-center
 # https://sli.dev/features/drawing
@@ -36,7 +36,7 @@ duration: 35min
 layout: center
 ---
 
-# Une architecture classique:  le principe en une phrase
+# Une architecture classique : le principe en une phrase
 
 <div class="text-xl font-bold my-4">
 Votre <span class="text-primary">interface</span> reste chez vous,<br/>
@@ -45,7 +45,7 @@ l'<span class="text-primary">intelligence</span> part dans un cloud souverain.
 
 <div class="grid grid-cols-3 gap-4 text-sm mt-6">
   <div class="border rounded-lg p-3 shadow-sm">💻 <b>Le logiciel client</b><br/>AnythingLLM, Claude Code… installés sur votre machine, avec vos habitudes</div>
-  <div class="border rounded-lg p-3 shadow-sm">🔌 <b>L'API</b><br/>un simple « lien », un standard ouvert (format OpenAI / Anthropic)</div>
+  <div class="border rounded-lg p-3 shadow-sm">🔌 <b>L'API</b><br/>un simple « lien », une convention de fait (format compatible OpenAI, normalisée par les passerelles type LiteLLM)</div>
   <div class="border rounded-lg p-3 shadow-sm">🧠 <b>Le modèle</b><br/>hébergé sur l'infrastructure fédérée ILaaS</div>
 </div>
 
@@ -53,7 +53,7 @@ l'<span class="text-primary">intelligence</span> part dans un cloud souverain.
 Comme la TV branchée sur un service de streaming : le contenu est produit ailleurs, on le consomme chez soi avec sa télécommande — sans verrouillage.
 </div>
 
-<!-- Notes : Analogie messagerie aussi possible (Thunderbird + serveur de mail). Le point clé : on découple l'outil du cerveau. C'est ce qui rend la mutation du métier absorbable. -->
+<!-- Notes : Analogie messagerie aussi possible (Thunderbird + serveur de mail). Le point clé : on découple l'outil du cerveau. C'est ce qui rend la mutation du métier absorbable. Nuance : ce qui transite (diffs, snippets) reste de l'IP sensible — à cadrer par contrat/DPA. -->
 
 ---
 layout: two-cols-header
@@ -72,7 +72,7 @@ layout: two-cols-header
 </div>
 <div class="text-center text-2xl">⬇ 🔑 API (Bearer)</div>
 <div class="border rounded-lg p-4 shadow-sm bg-white">
-  <b>e.g.ILaaS — cloud souverain de l'ESR</b><br/>
+  <b>ex. ILaaS — cloud souverain de l'ESR</b><br/>
   · Passerelle LiteLLM<br/>
   · Modèles : Qwen, Mistral, Gemma…<br/>
   · <i>devllm.ilaas.fr</i>
@@ -86,7 +86,7 @@ layout: two-cols-header
 ### Ce qui reste chez nous
 - Documents, base vectorielle, embeddings
 - Code, dépôt, hooks de sécurité
-- Le raisonnement *visible*, étape par étape
+- Les traces / logs d'exécution *(le calcul du raisonnement, lui, s'exécute côté modèle distant)*
 
 ### Ce qui part dans le cloud
 - Uniquement le **contexte nécessaire**
@@ -99,12 +99,11 @@ layout: two-cols-header
 
 </div>
 
-<!-- Notes : L'important à faire passer : seuls des fragments utiles quittent la machine. On ne « donne pas ses données » à l'IA. -->
+<!-- Notes : L'important à faire passer : seuls des fragments utiles quittent la machine. On ne « donne pas ses données » à l'IA. Mais même ces fragments (diffs, extraits) sont de l'IP sensible : cadrer par contrat, pas par supposition. -->
 
 ---
 
-## Evolution des modèles ouverts: pourquoi c'est possible
-
+## Evolution des modèles ouverts : pourquoi c'est possible
 
 ![](/img/d7.png)
 
@@ -131,7 +130,7 @@ flowchart LR
 
     subgraph CLOUD ["Cloud Souverain / Enclave Sécurisée (AWS Bedrock EU, Private API)"]
         direction TB
-        LLM["🧠 Modèle de Fondation<br/><i>(DeepSeek,Mistalv4 / Modèle Fine-tuné)</i>"]
+        LLM["🧠 Modèle de Fondation<br/><i>(Qwen, Mistral Large, Llama — open-weights, région souveraine)</i>"]
     end
 
     CLI -->|"1. Tokens de contexte (Diffs, logs, prompt)"| LLM
@@ -153,7 +152,7 @@ flowchart LR
     <b>2. Pas de stockage tiers :</b> Le code n'est jamais indexé de façon permanente dans une base vectorielle externe ; seuls les snippets actifs transitent.
   </div>
   <div class="p-2 border rounded bg-gray-50 dark:bg-gray-800">
-    <b>3. Enclave d'inférence certifiée :</b> Le modèle tourne dans une région souveraine (zéro rétention de logs, pas d'entraînement sur les prompts).
+    <b>3. Enclave d'inférence contractuelle :</b> Le modèle tourne dans une région souveraine ; la non-rétention des logs et le non-usage des prompts sont <b>garantis par contrat (DPA / clause fournisseur)</b>, à vérifier modèle par modèle.
   </div>
 </div>
 
@@ -173,19 +172,19 @@ flowchart LR
     subgraph MACHINE ["Poste Développeur / Bastion Local"]
         direction TB
         CLI["💻 Harnais CLI / IDE<br/><i>(Claude Code, Cursor)</i>"]
-        
+
         subgraph ROUTER ["Routeur Local (ex. 9Router / LiteLLM)"]
             direction TB
             ADAPT["🔄 Adaptateur de protocoles<br/><i>(OpenAI ↔ Anthropic ↔ Bedrock)</i>"]
             CACHE["⚡ Filtre / Compression tokens / Fallback"]
             SLM["🦙 Modèle Local (Ollama / Small SLM)<br/><i>(Tâches légères, triage, anonymisation PII)</i>"]
         end
-        
+
         CLI <-->|Requête standard /v1| ROUTER
     end
 
     subgraph CLOUD ["Cloud Souverain / Enclave Sécurisée"]
-        BIG_LLM["🧠 Modèle Lourd de Raisonnement<br/><i>(Mistral Large, DeepSeek-R1)</i>"]
+        BIG_LLM["🧠 Modèle Lourd de Raisonnement<br/><i>(Qwen, Mistral Large — open-weights disponibles en cloud ESR)</i>"]
     end
 
     ROUTER <-->|"Tâches complexes & raisonnement (chiffré)"| BIG_LLM
@@ -199,6 +198,8 @@ flowchart LR
 ```
 
 </div>
+
+<!-- Notes : DeepSeek-R1 ne figure pas au catalogue ILaaS actuel ; il s'utilise en auto-hébergement. La « souveraineté » porte sur l'infrastructure (localisation/hébergeur ESR), pas sur l'origine du modèle (Qwen = Alibaba, non européen). -->
 
 ---
 layout: default
@@ -238,6 +239,7 @@ En pratique, l'agent ne contacte pas directement le Cloud : il passe par une **p
   💡 <b>Gain d'architecture :</b> Le développeur manipule un point de terminaison unique (`http://localhost:port`). Toute la complexité d'authentification, de quotas et de conformité est encapsulée dans le routeur.
 </div>
 
+<!-- Notes : ⚠️ Le fallback multi-modèles casse la reproductibilité : documenter un « modèle de référence » (model of record) par tâche, et évaluer les évals sur le modèle effectivement utilisé. Le masquage PII n'est pas une fonctionnalité cœur de 9Router/LiteLLM — précisez si vous exigez une étape d'anonymisation séparée. -->
 
 ---
 layout: default
@@ -253,7 +255,7 @@ Le paysage a mûri : on passe des bibliothèques "magiques" aux moteurs de graph
   <div class="font-bold text-sm text-sky-500 mb-1">LangGraph</div>
   <div class="text-gray-400 mb-2 italic">Standard d'ingénierie pour workflows complexes</div>
   <ul class="space-y-1">
-    <li>Représente les flux sous forme de <b>graphe cyclique (DAG)</b></li>
+    <li>Représente les flux sous forme de <b>graphe d'états</b> : acyclique (workflow linéaire) ou <b>cyclique</b> (boucles agentiques retry / re-planification)</li>
     <li>Persistance native de l'état (State Machine)</li>
     <li>Idéal pour le <i>Human-in-the-loop</i> et le time-travel debugging</li>
   </ul>
@@ -261,12 +263,13 @@ Le paysage a mûri : on passe des bibliothèques "magiques" aux moteurs de graph
 </div>
 
 <div class="p-3 border rounded bg-gray-50 dark:bg-gray-800">
-  <div class="font-bold text-sm text-indigo-500 mb-1">CrewAI / AutoGen</div>
+  <div class="font-bold text-sm text-indigo-500 mb-1">CrewAI / Microsoft Agent Framework</div>
   <div class="text-gray-400 mb-2 italic">Orientés collaboration multi-agents</div>
   <ul class="space-y-1">
     <li>Basés sur la personnification (Rôles, Objectifs, Backstory)</li>
     <li>Prise en main très rapide pour le prototypage</li>
     <li>Moins déterministes ; attention aux boucles d'échanges infinies</li>
+    <li>⚠️ <b>AutoGen : maintenance mode depuis oct. 2025</b> → sur les nouveaux projets, préférer <b>AG2</b> (fork actif) ou le <b>Microsoft Agent Framework</b></li>
   </ul>
   <div class="mt-2 text-[10px] text-amber-500 font-bold">🎯 Idéal pour : POCs, simulations, remue-méninges</div>
 </div>
@@ -301,9 +304,10 @@ Comment standardiser l'exposition des outils internes à n'importe quel agent ?
 
 - **La fin des silos :** Un standard ouvert (Open Source) initié fin 2024 pour unifier la connexion modèle ↔ outils.
 - **Principe Client / Serveur :**
-  - **Serveur MCP :** Expose des ressources, des prompts et des outils via **stdio** (en local) ou **SSE / HTTP** (à distance).
+  - **Serveur MCP :** Expose des ressources, des prompts et des outils via **stdio** (en local) ou **Streamable HTTP** (à distance — un seul endpoint REST, auth OAuth possible). ⚠️ Le transport historique « SSE / HTTP » est **déprécié** depuis la spec **2025-03-26**.
   - **Client MCP :** Votre application, votre IDE (Cursor) ou un agent CLI (Claude Code).
 - **Écosystème unifié :** Un serveur MCP écrit pour PostgreSQL ou GitLab fonctionne instantanément avec n'importe quel client compatible.
+- ⚠️ **Serveurs de référence obsolètes :** `@modelcontextprotocol/server-postgres` et `mcp/github` sont **archivés/dépréciés depuis 2025** (le serveur Postgres présente un bypass de la restriction `read_only` par injection SQL). Utilisez des serveurs maintenus ou un wrapper basé sur le **SDK officiel**.
 
 </div>
 
@@ -311,59 +315,65 @@ Comment standardiser l'exposition des outils internes à n'importe quel agent ?
   <div class="text-sky-400 font-bold">// Configuration Claude Code / Cursor (mcp.json) :</div>
   {<br/>
   &nbsp;&nbsp;"mcpServers": {<br/>
-  &nbsp;&nbsp;&nbsp;&nbsp;"postgres-prod": {<br/>
-  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"command": "npx",<br/>
-  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"args": ["-y", "@modelcontextprotocol/server-postgres"],<br/>
-  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"env": { "DATABASE_URL": "postgresql://read_only@db..." }<br/>
-  &nbsp;&nbsp;&nbsp;&nbsp;},<br/>
-  &nbsp;&nbsp;&nbsp;&nbsp;"github": {<br/>
-  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"command": "docker",<br/>
-  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"args": ["run", "-i", "mcp/github"]<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;"github-officiel": {<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"type": "http",<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"url": "https://api.githubcopilot.com/mcp/",<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"headers": { "Authorization": "Bearer &lt;GITHUB_TOKEN&gt;" }<br/>
   &nbsp;&nbsp;&nbsp;&nbsp;}<br/>
   &nbsp;&nbsp;}<br/>
   }
 </div>
 </div>
 
+<!-- Notes : Pour PostgreSQL privilégiez un serveur maintenu (ex. « Postgres MCP Pro ») ou un petit wrapper SDK officiel, avec utilisateur en lecture seule stricte. Insistez : un méta-outil qui exécute du SQL doit TOUJOURS être en lecture seule a minima (règle de moindre privilège). -->
+
+<style>
+li {
+  font-size: 0.78em;
+}
+</style>
+
 ---
 layout: default
 ---
 
-# 4. Mémoire & Connaissances : RAG vs Fenêtre 1M+ tokens
+# 4. Mémoire & Connaissances : RAG vs Contexte géant
 
-L'avènement des contextes géants (1M+ tokens) et du **Prompt Caching** transforme la gestion mémoire :
+L'avènement des contextes géants — **1M+ tokens chez les fournisseurs frontières** (Claude Sonnet 4, Gemini 2.x), **128k à 262k sur les modèles hébergés ILaaS** — et du **Prompt Caching** transforme la gestion mémoire :
 
 <div class="grid grid-cols-2 gap-6 mt-4 text-xs">
 
 <div class="p-4 border rounded-xl bg-gray-50 dark:bg-gray-800">
   <div class="font-bold text-sm text-sky-500 mb-2">L'approche RAG Classique (Vector Search)</div>
   <ul class="space-y-2">
-    <li>• <b>Principe :</b> Découpage en morceaux (chunks de 500 mots) + recherche par similarité cosinus.</li>
-    <li>• <b>Quand l'utiliser ?</b>
+    <li><b>Principe :</b> Découpage en chunks de <b>~200 à 500 tokens</b> (≈ 150 à 350 mots) avec <b>overlap de 10–20 %</b> + recherche par similarité cosinus.</li>
+    <li><b>Quand l'utiliser ?</b>
       - Corpus de taille massive (> 100 millions de tokens, ex. tous les emails de l'entreprise).
       - Besoin de cloisonner strictement les droits d'accès par utilisateur.
     </li>
-    <li>• <b>Point faible :</b> Incapable de répondre à une question transversale (*« Quels sont tous les projets ayant dépassé leur budget en 2025 ? »*).</li>
+    <li><b>Point faible :</b> Incapable de répondre à une question transversale (*« Quels sont tous les projets ayant dépassé leur budget en 2025 ? »*).</li>
   </ul>
 </div>
 
 <div class="p-4 border-2 border-sky-500 rounded-xl bg-sky-50 dark:bg-sky-950">
-  <div class="font-bold text-sm text-sky-600 mb-2">Contexte 1M + Prompt Caching (La nouvelle norme)</div>
+  <div class="font-bold text-sm text-sky-600 mb-2">Contexte géant + Prompt Caching (La nouvelle norme)</div>
   <ul class="space-y-2">
-    <li>• <b>Principe :</b> On injecte l'intégralité d'un repository git ou d'une documentation volumineuse dans le contexte.</li>
-    <li>• <b>Prompt Caching :</b> Les tokens du préfixe documenté sont mis en cache côté serveur :
-      - <b>Coût divisé par 10</b> sur les requêtes suivantes
-      - Temps de latence (TTFT) divisé par 5.
+    <li><b>Principe :</b> Chez les fournisseurs frontières, on injecte l'intégralité d'un repository git dans le contexte. Sur ILaaS (128k–262k), on adapte : RAG d'abord, injection partielle ensuite.</li>
+    <li><b>Prompt Caching :</b> Les tokens du préfixe documenté sont mis en cache côté serveur :
+      - <b>Coût du préfixe mis en cache divisé par 10</b> (≈ 90 % d'économie)
+      - TTFT réduit jusqu'à ~80 % sur les longs prompts — <i>uniquement si le préfixe est strictement identique</i> (aucune insertion au milieu) et selon la politique du fournisseur.
     </li>
-    <li>• <b>Bénéfice :</b> Le LLM conserve la vision d'ensemble du système, sans perte d'information au chunking.</li>
+    <li>⚠️ <b>Garder la mesure :</b> au-delà de ~150–200k tokens, coût unitaire élevé et effets <i>lost-in-the-middle</i> (le modèle « oublie » le milieu du contexte).</li>
   </ul>
 </div>
 
 </div>
 
 <div class="mt-4 p-2 bg-sky-50 dark:bg-sky-950 border border-sky-400 rounded text-center text-xs">
-  💡 <b>Design Pattern moderne :</b> RAG pour filtrer les 5 gros documents pertinents ➔ Injection in extenso dans le contexte avec Caching.
+  💡 <b>Design Pattern moderne :</b> RAG pour filtrer les 5 gros documents pertinents ➔ Injection in extenso dans le contexte avec Caching (lorsque la fenêtre le permet).
 </div>
+
+<!-- Notes : Les chiffres 90 % et ~80 % correspondent aux gains revendiqués par les fournisseurs frontières sur des préfixes longs et stables — à re-mesurer sur votre fournisseur (LiteLLM/ILaaS), pas à transposer tels quels. -->
 
 ---
 layout: default
@@ -371,7 +381,7 @@ layout: default
 
 # 5. Orchestration en Production & Observabilité
 
-Les agents en production introduisent des modes d'échec non déterministes qu'il faut tracer méthodiquement :
+Les agents en production introduisent des modes d'échec non déterministes qu'il faut tracer méthodiquement
 
 <div class="grid grid-cols-2 gap-6 mt-4 text-xs">
 
@@ -392,7 +402,7 @@ Les agents en production introduisent des modes d'échec non déterministes qu'i
   <div class="text-sky-400 font-bold">// Exemple de trace Langfuse / OpenTelemetry :</div>
   <br/>
   TRACE [Session-8924] - 42.1s - $0.18<br/>
-  ├── 🟢 LLM Call: Planner (GPT-4o) [820ms]<br/>
+  ├── 🟢 LLM Call: Planner (Qwen / Mistral — cible souveraine) [820ms]<br/>
   ├── 🟢 Tool Call: search_db(query="user_42") [120ms]<br/>
   ├── 🔴 Tool Call: run_migration() [TIMEOUT 10s]<br/>
   │   └── ⚠️ Error captured: Connection timed out<br/>
@@ -416,14 +426,14 @@ Comment savoir si votre agent s'améliore après un changement de prompt ou d'ou
   <div class="font-bold text-sm text-sky-500 mb-1">SWE-bench</div>
   <div class="text-gray-400 mb-2 italic">Le standard d'or du génie logiciel</div>
   <p>L'agent reçoit une <i>Issue GitHub réelle</i> et le repo complet. Il doit écrire le patch.</p>
-  <div class="mt-2 text-emerald-500 font-bold">Métrique : % de suites de tests unitaires existantes passant au vert.</div>
+  <div class="mt-2 text-emerald-500 font-bold">Métrique : taux de résolution (pass@1) sur deux ensembles — <b>FAIL_TO_PASS</b> (les tests qui échouaient passent grâce au patch) + <b>PASS_TO_PASS</b> (pas de régression). État de l'art ≈ 70 % sur Verified (2025‑2026), ≈ 40 % sur SWE-bench Pro.</div>
 </div>
 
 <div class="p-3 border rounded bg-gray-50 dark:bg-gray-800">
   <div class="font-bold text-sm text-indigo-500 mb-1">GAIA & BrowseComp</div>
-  <div class="text-gray-400 mb-2 italic">Navigation & tâches multimodales</div>
-  <p>Évalue la capacité à chercher sur le web, télécharger un tableur, croiser des données et formuler un résultat précis.</p>
-  <div class="mt-2 text-indigo-500 font-bold">Métrique : Exact Match (EM) sur la réponse factuelle finale.</div>
+  <div class="text-gray-400 mb-2 italic">Recherche experte & scénarios « assistant »</div>
+  <p>BrowseComp (OpenAI, 2025) : formuler une question d'expert, chercher sur le web et croiser les sources. GAIA : scénarios « assistant » classiques (fichiers, web, tableurs, e-mails).</p>
+  <div class="mt-2 text-indigo-500 font-bold">Métrique : Exact Match (EM) sur la réponse factuelle finale (notation manuelle d'experts pour BrowseComp).</div>
 </div>
 
 <div class="p-3 border-2 border-sky-500 rounded bg-sky-50 dark:bg-sky-950">
@@ -439,6 +449,8 @@ Comment savoir si votre agent s'améliore après un changement de prompt ou d'ou
   🎯 <b>Principe fondamental :</b> On n'évalue pas un agent sur ce qu'il <i>dit</i>, mais sur l'<i>état final du système</i> après ses actions.
 </div>
 
+<!-- Notes : L'EM de GAIA/BrowseComp pénalise les réponses correctes mais reformulées → compléter systématiquement par un juge LLM (LLM-as-a-judge) sur vos évals métier. -->
+
 ---
 layout: default
 ---
@@ -449,11 +461,11 @@ Pour passer un système agentique en production sereinement :
 
 <div class="p-4 bg-sky-50 dark:bg-sky-950 border border-sky-500 rounded-xl mt-4">
   <ul class="text-xs space-y-2 text-gray-700 dark:text-gray-200">
-    <li>🔒 <b>Architecture réseau :</b> Privilégier le harnais local proche des données sensibles avec appels vers des endpoints LLM sous contrat entreprise (zéro rétention).</li>
-    <li>🔌 <b>Interconnexion standardisée :</b> Adopter <b>MCP</b> pour vos connecteurs internes afin d'éviter la dépendance à un framework applicatif.</li>
-    <li>🛡️ <b>Sécurité d'exécution :</b> Isoler tout outil de code dans une sandbox étanche (MicroVM / Docker éphémère) avec confirmation humaine sur les actions critiques.</li>
+    <li>🔒 <b>Architecture réseau :</b> Privilégier le harnais local proche des données sensibles avec appels vers des endpoints LLM sous contrat entreprise (<b>non-rétention négociée par DPA</b>, à vérifier modèle par modèle).</li>
+    <li>🔌 <b>Interconnexion standardisée :</b> Adopter <b>MCP</b> (transports stdio / Streamable HTTP) pour vos connecteurs internes afin d'éviter la dépendance à un framework applicatif.</li>
+    <li>🛡️ <b>Sécurité d'exécution :</b> Isoler tout outil de code dans une sandbox étanche (MicroVM / conteneurs éphémères non root, <i>pas Docker "nu"</i>) avec confirmation humaine sur les actions critiques.</li>
     <li>📊 <b>Observabilité complète :</b> Instrumenter les spans d'exécution via OpenTelemetry / Langfuse dès le premier jour pour diagnostiquer les boucles.</li>
-    <li>🧪 <b>Culture d'évaluation continue :</b> Évaluer systématiquement toute montée de version de modèle ou de prompt sur un jeu d'épreuve automatisé (Evals).</li>
+    <li>🧪 <b>Culture d'évaluation continue :</b> Évaluer systématiquement toute montée de version de modèle ou de prompt sur un jeu d'épreuve automatisé (Evals) — en documentant le <b>modèle de référence</b> utilisé pour rester reproductible.</li>
   </ul>
 </div>
 
@@ -473,7 +485,3 @@ class: text-center
 
 # Fin du Module 5
 ### Questions, outillage & discussions d'infrastructure !
-
-
-
-

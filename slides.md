@@ -337,6 +337,224 @@ li {
 layout: default
 ---
 
+# 3bis. Les Skills (Agent Skills) : la mémoire procédurale
+
+Les Skills ne connectent pas un agent à des outils : ils lui apprennent **comment faire son travail**. Lancés par Anthropic en octobre 2025, publiés en **standard ouvert le 18 déc. 2025** (agentskills.io), aujourd'hui supportés par **40+ produits** (Claude Code, Copilot, pi.dev, Opencode, Hermes, VS Code, Codex, Cursor, Gemini CLI…).
+
+<div class="grid grid-cols-2 gap-6 mt-4 text-xs">
+
+<div class="p-4 border rounded-xl bg-gray-50 dark:bg-gray-800">
+
+### Principe
+
+- Un **Skill = un dossier** contenant un fichier **`SKILL.md`** (frontmatter YAML `name` + `description`, puis des instructions Markdown) + scripts, références et assets optionnels.
+- **Chargement progressif :** au démarrage, l'agent ne charge que le **frontmatter** (≈ 100 tokens par Skill). Les instructions complètes ne sont lues que **si la demande de l'utilisateur « matche » la description**.
+- ➜ On peut installer des dizaines de Skills **à coût de contexte quasi nul**.
+
+### Où les ranger
+- `.claude/skills/`, `.github/skills/`, `.agents/skills/`
+- Commités dans le repo git → **partage d'équipe immédiat, versionnés**.
+
+</div>
+
+<div class="p-1 border-1 border-sky-500 rounded-xl bg-sky-50 dark:bg-sky-950">
+
+### La différence avec MCP (à retenir)
+
+<table class="text-xs w-full">
+  <thead>
+    <tr class="border-b">
+      <th class="text-left py-1">Primitive</th>
+      <th class="text-left py-1">Rôle</th>
+      <th class="text-left py-1">Coût de contexte</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr class="border-b">
+      <td class="py-1 font-bold">Skills</td>
+      <td class="py-1">Savoir-faire procédural (comment faire)</td>
+      <td class="py-1">≈ 0 token au repos, chargé à la demande</td>
+    </tr>
+    <tr class="border-b">
+      <td class="py-1 font-bold">MCP</td>
+      <td class="py-1">Connectivité externe (outils, données, APIs)</td>
+      <td class="py-1">Lourd : ~55k tokens pour 5 serveurs / 58 outils (avant *tool search* −85 %)</td>
+    </tr>
+    <tr>
+      <td class="py-1 font-bold">CLAUDE.md</td>
+      <td class="py-1">Contexte permanent (chargé à chaque session)</td>
+      <td class="py-1">Toujours chargé → à garder court</td>
+    </tr>
+  </tbody>
+</table>
+
+### Ils se composent
+Un Skill peut **pilotater un serveur MCP** : définir quels outils appeler, dans quel ordre et avec quelles vérifications intercalées (référence par nom complet, ex. `BigQuery:bigquery_schema`).
+
+</div>
+
+</div>
+
+
+<style>
+h3 {
+  font-size:1.4em;
+}
+p{
+  margin-top:0em;
+  margin-bottom:0em;
+  font-size:0.85em;
+}
+td {
+  padding-top:0.5em;
+  padding-bottom:0.5em;
+}
+  </style>
+
+
+
+
+---
+layout: default
+---
+
+# Écrire un Skill : anatomie d'un `SKILL.md`
+
+La **description** est la clé de routage : c'est sur elle seule que l'agent décide de charger le Skill. Elle doit décrire *ce que fait* le Skill **et** *quand l'utiliser*, à la 3ᵉ personne, avec le vocabulaire que tape réellement l'utilisateur.
+
+<div class="grid grid-cols-2 gap-6 mt-4 items-start">
+
+<div class="p-3 bg-gray-900 text-gray-100 rounded-lg font-mono text-[11px] leading-relaxed overflow-auto">
+
+<div class="text-sky-400 font-bold">// .claude/skills/document-academique/SKILL.md</div>
+--<br/>
+name: document-academique<br/>
+description: Rédiger et mettre en forme un document <br/>
+&nbsp;&nbsp;pédagogique (capsule, cours, mémoire) aux normes<br/>
+&nbsp;&nbsp;de l'université. À utiliser dès qu'un fichier .md<br/>
+&nbsp;&nbsp;de cours, une synthèse ou une soutenance est<br/>
+&nbsp;&nbsp;demandé(e).<br/>
+allowed-tools: Bash Read Write<br/>
+--<br/>
+<br/>
+# Rédaction d'un document académique<br/>
+1. Lire le référentiel de style : `references/style-guide.md`.<br/>
+2. Récupérer le plan thématique dans `references/plan.md`.<br/>
+3. Structurer : intro ➔ 3 parties ➔ synthèse ➔ quiz.<br/>
+4. Respecter le vocabulaire du domaine (pas de marketing).<br/>
+5. Terminer par un appel à « vérification factuelle ».<br/>
+
+<div class="text-sky-400 font-bold">// references/style-guide.md (chargé à la demande)</div>
+Capsule ≤ 12 min, slides ≤ 15, code doit être exécutable…
+
+</div>
+
+<div class="text-xs space-y-2">
+
+<div class="p-3 border rounded bg-gray-50 dark:bg-gray-800">
+  <b>✍️ Bonnes pratiques</b>
+  <ul class="mt-1 space-y-1">
+    <li>Garde un corps **< 500 lignes / ~5 000 tokens** ; découpe le reste en fichiers de référence liés à 1 niveau.</li>
+    <li>Restreins avec `allowed-tools` (ex. `Bash Read`) : limite d'écriture = limite de sécurité.</li>
+    <li>Partage par versionnement via `.claude/skills/` ; génère le scaffold avec le Skill officiel `skill-creator`.</li>
+  </ul>
+</div>
+
+
+</div>
+
+</div>
+
+<style>
+h3 {
+  font-size:1.4em;
+}
+p{
+  margin-bottom:0em;
+  font-size:0.85em;
+}
+td {
+  padding-top:0.5em;
+  padding-bottom:0.5em;
+}
+  </style>
+
+
+---
+layout: default
+---
+
+# Écrire un Skill : anatomie d'un `SKILL.md`
+
+La **description** est la clé de routage : c'est sur elle seule que l'agent décide de charger le Skill. Elle doit décrire *ce que fait* le Skill **et** *quand l'utiliser*, à la 3ᵉ personne, avec le vocabulaire que tape réellement l'utilisateur.
+
+<div class="grid grid-cols-2 gap-6 mt-4 items-start">
+
+<div class="p-3 bg-gray-900 text-gray-100 rounded-lg font-mono text-[11px] leading-relaxed overflow-auto">
+
+<div class="text-sky-400 font-bold">// .claude/skills/document-academique/SKILL.md</div>
+--<br/>
+name: document-academique<br/>
+description: Rédiger et mettre en forme un document <br/>
+&nbsp;&nbsp;pédagogique (capsule, cours, mémoire) aux normes<br/>
+&nbsp;&nbsp;de l'université. À utiliser dès qu'un fichier .md<br/>
+&nbsp;&nbsp;de cours, une synthèse ou une soutenance est<br/>
+&nbsp;&nbsp;demandé(e).<br/>
+allowed-tools: Bash Read Write<br/>
+--<br/>
+<br/>
+# Rédaction d'un document académique<br/>
+1. Lire le référentiel de style : `references/style-guide.md`.<br/>
+2. Récupérer le plan thématique dans `references/plan.md`.<br/>
+3. Structurer : intro ➔ 3 parties ➔ synthèse ➔ quiz.<br/>
+4. Respecter le vocabulaire du domaine (pas de marketing).<br/>
+5. Terminer par un appel à « vérification factuelle ».<br/>
+
+<div class="text-sky-400 font-bold">// references/style-guide.md (chargé à la demande)</div>
+Capsule ≤ 12 min, slides ≤ 15, code doit être exécutable…
+
+</div>
+
+<div class="text-xs space-y-2">
+
+
+<div class="p-3 border-2 border-amber-400 rounded bg-amber-50 dark:bg-amber-950">
+  <b>⚠️ Sécurité (chaîne d'approvisionnement)</b>
+  <ul class="mt-1 space-y-1">
+    <li>Un SKILL.md est du Markdown lisible : **lisez-le avant installation**, auditez les scripts embarqués (appels réseau non documentés, métadonnées auto-déclarées).</li>
+    <li>Gardez des garde-fous Hooks `PreToolUse` (bloquer `rm`, `curl | sh`) et un répertoire de travail limité au projet.</li>
+    <li>Privilégiez `anthropics/skills` et les éditeurs vérifiés (Vercel, Trail of Bits…).</li>
+  </ul>
+</div>
+<div class="mt-3 p-2 bg-sky-50 dark:bg-sky-950 border border-sky-400/40 rounded text-center text-xs">
+  💡 un Skill est un fichier texte <i>souverain, portable, versionné</i>, il fonctionne avec 40+ agents, chez nous comme dans le cloud.  <BR/>
+  C'est notre « procédure métier » partagée.
+</div>
+
+</div>
+
+</div>
+
+
+<style>
+h3 {
+  font-size:1.4em;
+}
+p{
+  margin-bottom:0em;
+  font-size:0.85em;
+}
+td {
+  padding-top:0.5em;
+  padding-bottom:0.5em;
+}
+  </style>
+
+
+---
+layout: default
+---
+
 # 4. Mémoire & Connaissances : RAG vs Contexte géant
 
 L'avènement des contextes géants — **1M+ tokens chez les fournisseurs frontières** (Claude Sonnet 4, Gemini 2.x), **128k à 262k sur les modèles hébergés ILaaS** — et du **Prompt Caching** transforme la gestion mémoire :

@@ -485,3 +485,6 @@ class: text-center
 
 # Fin du Module 5
 ### Questions, outillage & discussions d'infrastructure !
+
+
+En route vers [Agents pour le Dév Logiciel 🚀](https://olivier.barais.fr/agentic.module6/)
